@@ -1,1 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hutan Kita — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #16201A;
+    --canopy: #1F3A2E;
+    --canopy-light: #2F5240;
+    --canopy-soft: #E3E8DC;
+    --soil: #6B4226;
+    --soil-light: #8C5A34;
+    --soil-soft: #EDE2D4;
+    --amber: #D9A441;
+    --amber-dark: #AD7B26;
+    --alert: #C0432B;
+    --paper: #F1EFE4;
+    --card: #F9F8F1;
+    --line: #DAD6C6;
+    --sub: #5B6459;
+    --f-display: 'Fraunces', serif;
+    --f-body: 'IBM Plex Sans', sans-serif;
+    --f-mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--f-body); color: var(--ink); background: var(--paper); }
+  .icon { display: inline-block; vertical-align: middle; }
+  button { font-family: inherit; cursor: pointer; border: none; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 12px 16px; }
+
+  /* topbar */
+  .topbar { background: var(--ink); display: flex; align-items: center; gap: 4px; padding: 10px 16px; overflow-x: auto; }
+  .topbar-label { color: rgba(255,255,255,0.55); font-size: 12px; margin-right: 10px; white-space: nowrap; }
+  .topbar-tab { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background: transparent; color: rgba(255,255,255,0.75); font-size: 13px; white-space: nowrap; }
+  .topbar-tab.active { background: var(--amber); color: var(--ink); }
+
+  /* pills */
+  .pill { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 999px; display: inline-block; }
+  .pill-canopy { background: var(--canopy-soft); color: var(--canopy); }
+  .pill-amber { background: #F5E6C6; color: var(--amber-dark); }
+  .pill-alert { background: #F4DCD5; color: var(--alert); }
+  .pill-soil { background: var(--soil-soft); color: var(--soil); }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+  .btn { font-size: 14px; padding: 10px 18px; border-radius: 8px; }
+  .btn-canopy { background: var(--canopy); color: #fff; }
+  .btn-amber { background: var(--amber); color: var(--ink); font-weight: 500; }
+  .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); }
+  .btn-soil { background: var(--soil); color: #fff; }
+
+  /* ===== Landing ===== */
+  .landing-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 56px; border-bottom: 1px solid var(--line); }
+  .logo { font-family: var(--f-display); font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .landing-nav { display: flex; gap: 32px; font-size: 15px; color: var(--sub); }
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 64px 56px; align-items: center; }
+  .hero-eyebrow { color: var(--amber-dark); font-size: 14px; margin-bottom: 16px; }
+  .hero h1 { font-family: var(--f-display); font-size: 52px; line-height: 1.08; font-weight: 500; margin: 0 0 24px; }
+  .hero p { color: var(--sub); font-size: 17px; max-width: 480px; margin: 0 0 32px; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dossier-card { width: 320px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 24px; transform: rotate(1.5deg); font-family: var(--f-mono); box-shadow: 0 18px 40px -20px rgba(22,32,26,0.35); margin: 0 auto; }
+  .dossier-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .dossier-label { font-size: 11px; color: var(--sub); }
+  .dossier-id { font-family: var(--f-display); font-size: 20px; margin-bottom: 4px; }
+  .dossier-loc { font-size: 13px; color: var(--sub); margin-bottom: 20px; }
+  .dossier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px; }
+  .dossier-grid .lab { color: var(--sub); margin-bottom: 4px; }
+
+  .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); padding: 0 56px; }
+  .stat-cell { background: var(--paper); padding: 24px; }
+  .stat-num { font-family: var(--f-display); font-size: 28px; color: var(--canopy); margin-bottom: 4px; }
+  .stat-lab { font-size: 13px; color: var(--sub); }
+
+  .section { padding: 64px 56px; }
+  .section h2 { font-family: var(--f-display); font-size: 28px; margin: 0 0 8px; }
+  .section .lead { color: var(--sub); font-size: 15px; max-width: 520px; margin: 0 0 32px; }
+
+  .layers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .layer-card { padding: 20px; }
+  .layer-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; color: var(--canopy); }
+  .layer-num { font-size: 12px; color: var(--sub); }
+  .layer-title { font-family: var(--f-display); font-size: 17px; margin-bottom: 8px; }
+  .layer-desc { font-size: 13px; color: var(--sub); }
+
+  .projects-section { background: var(--canopy-soft); }
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .project-card { padding: 20px; }
+  .project-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .project-id { font-family: var(--f-mono); font-size: 12px; color: var(--sub); }
+  .project-loc { font-family: var(--f-display); font-size: 19px; margin-bottom: 16px; }
+  .project-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--sub); }
+
+  .marketplace-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mkt-card { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .mkt-img { background: var(--soil-soft); height: 90px; display: flex; align-items: center; justify-content: center; color: var(--soil); }
+  .mkt-body { padding: 16px; }
+  .mkt-name { font-size: 14px; margin-bottom: 4px; }
+  .mkt-price { font-size: 13px; color: var(--amber-dark); margin-bottom: 8px; }
+  .mkt-by { font-size: 12px; color: var(--sub); }
+
+  .landing-footer { padding: 32px 56px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 13px; color: var(--sub); }
+
+  /* ===== Dashboard ===== */
+  .dash-wrap { display: flex; min-height: 720px; }
+  .dash-sidebar { width: 240px; flex-shrink: 0; background: var(--canopy); padding: 20px; color: #fff; display: flex; flex-direction: column; }
+  .dash-logo { font-family: var(--f-display); font-size: 20px; margin-bottom: 32px; display: flex; align-items: center; gap: 8px; }
+  .dash-nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; font-size: 14px; margin-bottom: 2px; }
+  .dash-nav-item.active { background: rgba(255,255,255,0.12); }
+  .dash-user { margin-top: auto; padding-top: 24px; font-size: 12px; color: rgba(255,255,255,0.65); }
+  .dash-main { flex: 1; padding: 32px; }
+  .dash-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+  .dash-title { font-family: var(--f-display); font-size: 24px; }
+  .dash-sub { font-size: 13px; color: var(--sub); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card { padding: 16px; }
+  .kpi-icon { color: var(--canopy); margin-bottom: 12px; }
+  .kpi-val { font-family: var(--f-display); font-size: 22px; }
+  .kpi-lab { font-size: 12px; color: var(--sub); }
+  .dash-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .panel { padding: 20px; }
+  .panel-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 500; }
+  .legend { display: flex; gap: 12px; font-size: 12px; color: var(--sub); }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .grid-cells { display: grid; grid-template-columns: repeat(15, 1fr); gap: 6px; }
+  .grid-cells div { aspect-ratio: 1/1; border-radius: 3px; }
+  .fire-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: var(--amber-dark); }
+  .fire-score { font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+  .sensor-row { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .activity-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .activity-row:first-child { border-top: none; }
+  .activity-left { display: flex; align-items: center; gap: 12px; color: var(--sub); }
+  .activity-left b { color: var(--ink); font-weight: 500; }
+  .activity-right { display: flex; align-items: center; gap: 12px; }
+
+  /* ===== Mobile ===== */
+  .mobile-wrap { display: flex; justify-content: center; padding: 40px 16px; }
+  .phone { background: var(--ink); border-radius: 40px; padding: 12px; width: 340px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5); }
+  .phone-screen { background: var(--soil-soft); border-radius: 30px; height: 640px; overflow: hidden; display: flex; flex-direction: column; }
+  .fk-header { background: var(--soil); color: #fff; padding: 32px 20px 20px; }
+  .fk-header .role { font-size: 12px; opacity: 0.8; }
+  .fk-header .name { font-family: var(--f-display); font-size: 18px; }
+  .fk-body { padding: 20px; flex: 1; }
+  .fk-sub { font-size: 13px; color: var(--sub); margin-bottom: 12px; }
+  .task-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .task-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .task-title { font-size: 15px; font-weight: 500; }
+  .task-meta { font-size: 12px; color: var(--sub); margin-bottom: 12px; }
+  .task-card.dim { opacity: 0.7; }
+  .fk-tabbar { border-top: 1px solid var(--line); background: #fff; display: flex; justify-content: space-around; padding: 12px 0; }
+  .fk-tabbar div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--sub); }
+  .fk-tabbar div.on { color: var(--soil); }
+
+  .flow-wrap { flex: 1; display: flex; flex-direction: column; padding: 20px; }
+  .flow-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .flow-top button { background: none; color: var(--soil); }
+  .flow-step-count { font-size: 12px; color: var(--sub); }
+  .flow-progress { display: flex; gap: 6px; margin-bottom: 24px; }
+  .flow-progress div { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .flow-progress div.on { background: var(--soil); }
+  .flow-icon { background: var(--soil); border-radius: 999px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #fff; }
+  .flow-title { font-family: var(--f-display); font-size: 20px; margin-bottom: 8px; }
+  .flow-desc { font-size: 14px; color: var(--sub); margin-bottom: 24px; }
+  .qr-box { border: 1px dashed var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; background: #fff; color: var(--soil); }
+  .qr-box.done { background: var(--canopy-soft); color: var(--canopy); }
+  .qr-box span { font-size: 13px; color: var(--ink); }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .photo-cell { border: 1px dashed var(--line); border-radius: 10px; aspect-ratio: 3/4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #fff; color: var(--soil); }
+  .photo-cell.done { background: var(--canopy-soft); color: var(--canopy); }
+  .photo-cell span { font-size: 10px; color: var(--sub); }
+  .flow-next { margin-top: auto; }
+  .flow-next button { width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #fff; }
+  .flow-next button.enabled { background: var(--soil); }
+  .flow-next button.disabled { background: var(--line); color: #fff; cursor: not-allowed; }
+
+  .done-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
+  .done-icon { background: var(--canopy-soft); border-radius: 999px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--canopy); }
+  .done-title { font-family: var(--f-display); font-size: 19px; margin-bottom: 8px; }
+  .done-desc { font-size: 13px; color: var(--sub); margin-bottom: 24px; }
+  .done-wallet { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; color: var(--amber-dark); font-size: 14px; }
+
+  /* ===== Admin ===== */
+  .admin-wrap { padding: 32px; min-height: 720px; }
+  .admin-title { font-family: var(--f-display); font-size: 24px; margin-bottom: 4px; }
+  .admin-sub { font-size: 13px; color: var(--sub); margin-bottom: 24px; }
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .admin-tabs button { padding: 8px 16px; border-radius: 6px; font-size: 13px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  .admin-tabs button.active { background: var(--canopy); color: #fff; }
+  .admin-table-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .admin-table-wrap thead { background: var(--canopy-soft); }
+  .admin-table-wrap.payroll thead { background: var(--soil-soft); }
+  .admin-table-wrap tbody tr { border-top: 1px solid var(--line); }
+  .mono { font-family: var(--f-mono); }
+  .sdm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .sdm-panel { padding: 20px; }
+  .sdm-panel-title { font-size: 14px; font-weight: 500; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .sdm-role { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+  .sdm-role.hq { background: var(--canopy-soft); }
+  .sdm-role.field { background: var(--soil-soft); }
+
+  @media (max-width: 860px) {
+    .hero, .dash-row, .sdm-grid { grid-template-columns: 1fr; }
+    .stats-strip, .layers-grid, .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    .marketplace-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .landing-nav { display: none; }
+    .landing-header, .section, .hero { padding-left: 24px; padding-right: 24px; }
+    .dash-wrap { flex-direction: column; }
+    .dash-sidebar { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar"></div>
+<div id="view-root"></div>
+
+<script>
+/* ---------------- Icons ---------------- */
+const ICON_PATHS = {
+  tree: '<path d="M12 2 7 9h3l-4 6h4l-3 6h10l-3-6h4l-4-6h3z"/><path d="M12 21v-4"/>',
+  mapPin: '<path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  camera: '<path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  qrCode: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M15 20c0-2 1.5-4 4-4.3"/>',
+  leaf: '<path d="M4 20c8 0 14-6 14-14 0 0-12-1-14 8-1 3 0 6 0 6z"/><path d="M4 20c3-4 6-7 12-11"/>',
+  barChart: '<path d="M4 20V10M12 20V4M20 20v-7"/>',
+  shieldCheck: '<path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  chevronRight: '<path d="M9 6l6 6-6 6"/>',
+  chevronLeft: '<path d="M15 6l-6 6 6 6"/>',
+  check: '<path d="M5 12l5 5L19 7"/>',
+  flame: '<path d="M12 2s5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 1-3s.5 2 2 2c-1-3 0-5 2-9z"/>',
+  droplet: '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
+  wallet: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="17" cy="14" r="1.2"/>',
+  clipboardList: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M8 11h8M8 14h8M8 17h5"/>',
+  building: '<rect x="4" y="3" width="16" height="18"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/>',
+  sprout: '<path d="M12 21v-9"/><path d="M12 12C6 12 4 8 4 5c4 0 7 2 8 5"/><path d="M12 12c6 0 8-4 8-7-4 0-7 2-8 5"/>',
+  thermometer: '<path d="M12 3a2 2 0 0 0-2 2v9a4 4 0 1 0 4 0V5a2 2 0 0 0-2-2z"/>',
+  fileDown: '<path d="M6 2h9l5 5v15H6z"/><path d="M12 11v6M9 14l3 3 3-3"/>',
+  home: '<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+  history: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  bookOpen: '<path d="M12 6c-2-2-6-2-9-1v13c3-1 7-1 9 1 2-2 6-2 9-1V5c-3-1-7-1-9 1z"/>',
+  userRound: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/>',
+  layoutGrid: '<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>',
+  arrowUpRight: '<path d="M7 17L17 7"/><path d="M9 7h8v8"/>',
+  packageCheck: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M9 13l2 2 4-4"/>',
+};
+function icon(name, size = 18) {
+  return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name] || ""}</svg>`;
+}
+
+/* ---------------- Data ---------------- */
+const formatRp = (n) => "Rp " + n.toLocaleString("id-ID");
+
+function pill(text, tone = "canopy") {
+  return `<span class="pill pill-${tone}">${text}</span>`;
+}
+const statusTone = {
+  Candidate: "soil", Screening: "amber", Verified: "amber",
+  "Ready for Funding": "amber", Active: "canopy", Completed: "canopy",
+};
+
+const projects = [
+  { id: "HTK-PRJ-2026-001", loc: "Sungai Gelam, Jambi", ha: 200, trees: 100000, status: "Active", survival: 84 },
+  { id: "HTK-PRJ-2026-002", loc: "Ketapang, Kalimantan Barat", ha: 150, trees: 75000, status: "Verified", survival: null },
+  { id: "HTK-PRJ-2026-003", loc: "Muara Enim, Sumatera Selatan", ha: 180, trees: 90000, status: "Screening", survival: null },
+];
+
+const marketplace = [
+  { name: "Kopi Liberika Kalbar", price: "Rp 85.000 / 250g", by: "KUPS Sungai Gelam" },
+  { name: "Madu Hutan", price: "Rp 120.000 / 350ml", by: "Kelompok Tani Jambi" },
+  { name: "Vanila Kering", price: "Rp 45.000 / 20g", by: "Forest Keeper Klaster 2" },
+  { name: "Anyaman Bambu", price: "Rp 65.000 / pcs", by: "KUPS Ketapang" },
+];
+
+const survivalData = [58, 63, 67, 71, 74, 77, 79, 80, 81, 82, 83, 84].map((rate, i) => ({ m: `B${i + 1}`, rate }));
+
+const activityFeed = [
+  { fk: "Yanto S. (FK-0231)", action: "Penanaman", tree: "HTK-2026-00452", time: "09:12", status: "Terverifikasi" },
+  { fk: "Rina W. (FK-0198)", action: "Penyiangan", tree: "HTK-2026-00311", time: "08:47", status: "Terverifikasi" },
+  { fk: "Budi K. (FK-0304)", action: "Pemupukan", tree: "HTK-2026-00289", time: "08:20", status: "Menunggu QC" },
+  { fk: "Sari M. (FK-0177)", action: "Penyulaman", tree: "HTK-2026-00145", time: "07:55", status: "Terverifikasi" },
+];
+
+const fkPayroll = [
+  { name: "Yanto S.", id: "FK-0231", tanam: 180, siang: 60, pupuk: 40, bonus: true },
+  { name: "Rina W.", id: "FK-0198", tanam: 210, siang: 45, pupuk: 30, bonus: true },
+  { name: "Budi K.", id: "FK-0304", tanam: 140, siang: 70, pupuk: 55, bonus: false },
+  { name: "Sari M.", id: "FK-0177", tanam: 165, siang: 50, pupuk: 20, bonus: true },
+];
+const payrollTotal = (r) => r.tanam * 5000 + r.siang * 2000 + r.pupuk * 2000 + (r.bonus ? r.tanam * 1000 : 0);
+
+const steps = [
+  { title: "Pilih titik tanam", desc: "Pilih titik pada grid 4×5m di peta lokasi Blok A.", ic: "mapPin" },
+  { title: "Siapkan lubang tanam", desc: "Gali lubang berukuran 30×30×30 cm sesuai standar.", ic: "sprout" },
+  { title: "Cek kondisi bibit", desc: "Pastikan tinggi bibit ≥30 cm, polybag 2L, daun sehat.", ic: "leaf" },
+  { title: "Tempatkan bibit", desc: "Posisikan bibit tegak lurus di tengah lubang tanam.", ic: "tree" },
+  { title: "Tutup & padatkan tanah", desc: "Timbun dengan tanah dan padatkan perlahan di sekeliling batang.", ic: "sprout" },
+  { title: "Siram jika perlu", desc: "Beri air secukupnya pada bibit yang baru ditanam.", ic: "droplet" },
+  { title: "Scan QR Tree ID", desc: "Pindai kode QR pada ajir penanda untuk menautkan bibit ke data proyek.", ic: "qrCode" },
+  { title: "Ambil 3 foto & kirim", desc: "Close-up bibit, bibit dengan lanskap, dan selfie bersama bibit.", ic: "camera" },
+];
+
+/* ---------------- Global state ---------------- */
+const state = {
+  view: "landing",
+  mobile: { screen: "tasks", step: 0, scanned: false, photos: [false, false, false] },
+  admin: { tab: "proyek" },
+};
+
+/* ---------------- Chart helper (SVG area chart) ---------------- */
+function areaChartSVG(data, { width = 640, height = 180, min = 40, max = 100 } = {}) {
+  const stepX = width / (data.length - 1);
+  const scaleY = (v) => height - ((v - min) / (max - min)) * height;
+  const pts = data.map((d, i) => [i * stepX, scaleY(d.rate)]);
+  const line = pts.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  const area = `${line} L${width},${height} L0,${height} Z`;
+  const labels = data.map((d, i) => `<text x="${(i * stepX).toFixed(1)}" y="${height + 16}" font-size="10" fill="var(--sub)" text-anchor="middle">${d.m}</text>`).join("");
+  const dots = pts.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="var(--canopy)" />`).join("");
+  return `
+    <svg viewBox="0 0 ${width} ${height + 24}" width="100%" style="overflow:visible">
+      <defs>
+        <linearGradient id="srGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--canopy)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--canopy)" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#srGrad)" />
+      <path d="${line}" fill="none" stroke="var(--canopy)" stroke-width="2" />
+      ${dots}
+      ${labels}
+    </svg>`;
+}
+
+/* ---------------- View renderers ---------------- */
+function renderTopbar() {
+  const tabs = [
+    ["landing", "Landing page", "arrowUpRight"],
+    ["dashboard", "Corporate dashboard", "barChart"],
+    ["mobile", "Forest Keeper app", "qrCode"],
+    ["admin", "Admin panel", "clipboardList"],
+  ];
+  document.getElementById("topbar").innerHTML =
+    `<span class="topbar-label">Hutan Kita — prototype:</span>` +
+    tabs.map(([id, label, ic]) =>
+      `<button class="topbar-tab ${state.view === id ? "active" : ""}" data-action="set-view" data-view="${id}">${icon(ic, 13)} ${label}</button>`
+    ).join("");
+}
+
+function renderLanding() {
+  return `
+  <div>
+    <header class="landing-header">
+      <div class="logo">${icon("tree", 22)} Hutan Kita</div>
+      <nav class="landing-nav"><span>Program</span><span>Dampak</span><span>Marketplace</span><span>Mitra</span></nav>
+      <button class="btn btn-canopy">Mulai program restorasi</button>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="hero-eyebrow">Restoration-first, technology-enabled, livelihood-driven</p>
+        <h1>Restorasi hutan yang bisa dibuktikan, bukan sekadar dijanjikan.</h1>
+        <p>Setiap pohon punya identitas, lokasi, dan riwayat perawatan yang terekam — dari lubang tanam pertama sampai laporan dampak yang dikirim ke mitra Anda.</p>
+        <div class="hero-actions">
+          <button class="btn btn-amber">Lihat proyek yang siap didanai</button>
+          <button class="btn btn-outline">Unduh ringkasan dampak</button>
+        </div>
+      </div>
+      <div class="dossier-card">
+        <div class="dossier-top">
+          <span class="dossier-label">Project Restoration Dossier</span>
+          ${pill("Active", "canopy")}
+        </div>
+        <div class="dossier-id">HTK-PRJ-2026-001</div>
+        <div class="dossier-loc">Sungai Gelam, Jambi</div>
+        <div class="dossier-grid">
+          <div><div class="lab">Luas lahan</div><div>200 ha</div></div>
+          <div><div class="lab">Target pohon</div><div>100.000</div></div>
+          <div><div class="lab">Survival rate</div><div style="color:var(--canopy)">84%</div></div>
+          <div><div class="lab">Forest Keeper</div><div>42 aktif</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-strip">
+      ${[
+        ["202.004 ha", "Area terdampak karhutla nasional, Juli 2026"],
+        ["100.000", "Pohon pada proyek pilot Sungai Gelam"],
+        ["> 80%", "Target survival rate bulan ke-12"],
+        ["12%", "Komisi platform, sisanya ke kelompok tani"],
+      ].map(([n, l]) => `<div class="stat-cell"><div class="stat-num">${n}</div><div class="stat-lab">${l}</div></div>`).join("")}
+    </section>
+
+    <section class="section">
+      <h2>Empat lapis transparansi</h2>
+      <p class="lead">Setiap tahap restorasi didokumentasikan agar bisa diverifikasi, dari lubang tanam pertama hingga laporan dampak.</p>
+      <div class="layers-grid">
+        ${[
+          ["Lapis 1", "Pre-planting", "Foto geo-tagged, timestamp perangkat, kondisi tanah & vegetasi awal.", "mapPin"],
+          ["Lapis 2", "Planting", "QR Code Tree ID terpasang, log Forest Keeper, 3 sudut foto wajib.", "qrCode"],
+          ["Lapis 3", "Growth", "Update foto berkala, pembacaan sensor IoT, analisis NDVI satelit.", "barChart"],
+          ["Lapis 4", "Impact", "Survival rate, estimasi CO₂ terserap, produk agroforestri terjual.", "shieldCheck"],
+        ].map(([num, title, desc, ic]) => `
+          <div class="card layer-card">
+            <div class="layer-top">${icon(ic, 20)}<span class="layer-num">${num}</span></div>
+            <div class="layer-title">${title}</div>
+            <div class="layer-desc">${desc}</div>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <section class="section projects-section">
+      <h2>Proyek yang siap didanai</h2>
+      <div class="projects-grid">
+        ${projects.map((p) => `
+          <div class="card project-card">
+            <div class="project-top">
+              <span class="project-id">${p.id}</span>
+              ${pill(p.status, statusTone[p.status])}
+            </div>
+            <div class="project-loc">${p.loc}</div>
+            <div class="project-meta"><span>${p.ha} ha</span><span>${p.trees.toLocaleString("id-ID")} pohon</span></div>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Agroforestry marketplace</h2>
+      <div class="marketplace-grid">
+        ${marketplace.map((m) => `
+          <div class="mkt-card">
+            <div class="mkt-img">${icon("leaf", 26)}</div>
+            <div class="mkt-body">
+              <div class="mkt-name">${m.name}</div>
+              <div class="mkt-price">${m.price}</div>
+              <div class="mkt-by">${m.by}</div>
+            </div>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <footer class="landing-footer">
+      <span>Hutan Kita — Integrated Forest Restoration Service</span>
+      <span>Prototype demo, bukan produk final</span>
+    </footer>
+  </div>`;
+}
+
+function renderDashboard() {
+  const gridCells = Array.from({ length: 90 }, (_, i) => {
+    const alive = (i * 37) % 100 > 16;
+    const risk = i === 12 || i === 13 || i === 24;
+    return { alive, risk };
+  });
+  const gridHtml = gridCells.map((cell) =>
+    `<div style="background:${cell.risk ? "var(--alert)" : cell.alive ? "var(--canopy)" : "var(--line)"}"></div>`
+  ).join("");
+
+  const navItems = [
+    ["Ringkasan", "layoutGrid", true], ["Peta Proyek", "mapPin", false],
+    ["Monitoring", "barChart", false], ["Laporan Dampak", "fileDown", false],
+    ["Marketplace", "packageCheck", false],
+  ];
+
+  return `
+  <div class="dash-wrap">
+    <aside class="dash-sidebar">
+      <div class="dash-logo">${icon("tree", 20)} Hutan Kita</div>
+      <nav>
+        ${navItems.map(([label, ic, active]) => `<div class="dash-nav-item ${active ? "active" : ""}">${icon(ic, 16)} ${label}</div>`).join("")}
+      </nav>
+      <div class="dash-user">
+        <div>PT Nusantara Hijau</div>
+        <div>Program ESG · Standard</div>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">Program ESG: Restorasi Sungai Gelam</div>
+          <div class="dash-sub">HTK-PRJ-2026-001 · Jambi · Status Active</div>
+        </div>
+        <button class="btn btn-canopy" style="display:flex;align-items:center;gap:8px">${icon("fileDown", 16)} Unduh Impact Report</button>
+      </div>
+
+      <div class="kpi-grid">
+        ${[
+          ["Pohon ditanam", "100.000", "tree"],
+          ["Survival rate", "84%", "shieldCheck"],
+          ["Estimasi CO₂ terserap", "1.240 tCO₂e", "leaf"],
+          ["Forest Keeper aktif", "42", "users"],
+        ].map(([label, val, ic]) => `
+          <div class="card kpi-card">
+            <div class="kpi-icon">${icon(ic, 16)}</div>
+            <div class="kpi-val">${val}</div>
+            <div class="kpi-lab">${label}</div>
+          </div>`).join("")}
+      </div>
+
+      <div class="dash-row">
+        <div class="card panel">
+          <div class="panel-top">
+            <span>Grid penanaman — Blok A–D</span>
+            <div class="legend">
+              <span><i style="background:var(--canopy)"></i>Hidup</span>
+              <span><i style="background:var(--line)"></i>Mati/diganti</span>
+              <span><i style="background:var(--alert)"></i>Zona risiko</span>
+            </div>
+          </div>
+          <div class="grid-cells">${gridHtml}</div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-top">Fire risk & sensor IoT</div>
+          <div class="fire-row">
+            ${icon("flame", 20)}
+            <div>
+              <div class="fire-score">Skor risiko: 18/100</div>
+              ${pill("Rendah", "amber")}
+            </div>
+          </div>
+          <div class="sensor-row">${icon("thermometer", 14)} Suhu udara: 29.4°C</div>
+          <div class="sensor-row">${icon("droplet", 14)} Kelembaban tanah: 41%</div>
+        </div>
+      </div>
+
+      <div class="card panel" style="margin-bottom:24px">
+        <div class="panel-top">Tren survival rate</div>
+        ${areaChartSVG(survivalData)}
+      </div>
+
+      <div class="card panel">
+        <div class="panel-top">Aktivitas terbaru</div>
+        ${activityFeed.map((a) => `
+          <div class="activity-row">
+            <div class="activity-left">${icon("camera", 14)} <b>${a.fk}</b> ${a.action} · ${a.tree}</div>
+            <div class="activity-right"><span style="color:var(--sub)">${a.time}</span> ${pill(a.status, a.status === "Terverifikasi" ? "canopy" : "amber")}</div>
+          </div>`).join("")}
+      </div>
+    </main>
+  </div>`;
+}
+
+function renderMobile() {
+  const m = state.mobile;
+
+  if (m.screen === "tasks") {
+    return `
+    <div class="mobile-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="fk-header">
+          <div class="role">Forest Keeper</div>
+          <div class="name">Pak Yanto · FK-0231</div>
+        </div>
+        <div class="fk-body">
+          <div class="fk-sub">Tugas hari ini</div>
+          <div class="task-card">
+            <div class="task-title-row">${icon("tree", 18)}<span class="task-title">Tanam 50 bibit — Blok A</span></div>
+            <div class="task-meta">Klaster Sungai Gelam · HTK-PRJ-2026-001</div>
+            <button class="btn btn-canopy" style="width:100%" data-action="mobile-start">Mulai penanaman</button>
+          </div>
+          <div class="task-card dim">
+            <div class="task-title-row">${icon("leaf", 18)}<span class="task-title">Penyiangan — Blok B</span></div>
+            <div class="task-meta">Terjadwal besok</div>
+          </div>
+        </div>
+        <div class="fk-tabbar">
+          <div class="on">${icon("home", 18)}Tugas</div>
+          <div>${icon("history", 18)}Riwayat</div>
+          <div>${icon("bookOpen", 18)}Panduan</div>
+          <div>${icon("userRound", 18)}Profil</div>
+        </div>
+      </div></div>
+    </div>`;
+  }
+
+  if (m.screen === "flow") {
+    const s = steps[m.step];
+    const isQr = m.step === 6;
+    const isPhoto = m.step === 7;
+    const canNext = isQr ? m.scanned : isPhoto ? m.photos.every(Boolean) : true;
+
+    return `
+    <div class="mobile-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="flow-wrap">
+          <div class="flow-top">
+            <button data-action="mobile-back">${icon("chevronLeft", 20)}</button>
+            <div class="flow-step-count">Langkah ${m.step + 1} dari 8</div>
+            <span style="width:20px"></span>
+          </div>
+          <div class="flow-progress">
+            ${steps.map((_, i) => `<div class="${i <= m.step ? "on" : ""}"></div>`).join("")}
+          </div>
+          <div class="flow-icon">${icon(s.ic, 26)}</div>
+          <div class="flow-title">${s.title}</div>
+          <div class="flow-desc">${s.desc}</div>
+
+          ${isQr ? `
+            <button class="qr-box ${m.scanned ? "done" : ""}" data-action="mobile-scan">
+              ${icon("qrCode", 32)}
+              <span>${m.scanned ? "Tree ID HTK-2026-00452 tertaut" : "Ketuk untuk memindai"}</span>
+            </button>` : ""}
+
+          ${isPhoto ? `
+            <div class="photo-grid">
+              ${["Close-up", "Lanskap", "Selfie"].map((label, i) => `
+                <button class="photo-cell ${m.photos[i] ? "done" : ""}" data-action="mobile-photo" data-idx="${i}">
+                  ${m.photos[i] ? icon("check", 20) : icon("camera", 20)}
+                  <span>${label}</span>
+                </button>`).join("")}
+            </div>` : ""}
+
+          <div class="flow-next">
+            <button class="${canNext ? "enabled" : "disabled"}" data-action="mobile-next" ${canNext ? "" : "disabled"}>
+              ${m.step === 7 ? "Kirim data" : "Lanjut"} ${icon("chevronRight", 16)}
+            </button>
+          </div>
+        </div>
+      </div></div>
+    </div>`;
+  }
+
+  // done
+  return `
+  <div class="mobile-wrap">
+    <div class="phone"><div class="phone-screen">
+      <div class="done-wrap">
+        <div class="done-icon">${icon("check", 28)}</div>
+        <div class="done-title">Data terkirim</div>
+        <div class="done-desc">Pohon HTK-2026-00452 tercatat sebagai ditanam dan menunggu validasi supervisor.</div>
+        <div class="done-wallet">${icon("wallet", 16)} +${formatRp(5000)} ditambahkan ke upah harian</div>
+        <button class="btn btn-soil" data-action="mobile-reset">Kembali ke tugas</button>
+      </div>
+    </div></div>
+  </div>`;
+}
+
+function renderAdmin() {
+  const tab = state.admin.tab;
+  const tabs = [["proyek", "Proyek"], ["sdm", "SDM & Struktur"], ["payroll", "Payroll Forest Keeper"]];
+
+  let body = "";
+  if (tab === "proyek") {
+    body = `
+    <div class="admin-table-wrap">
+      <table>
+        <thead><tr>${["Project ID", "Lokasi", "Luas", "Target pohon", "Status", "Survival rate"].map((h) => `<th>${h}</th>`).join("")}</tr></thead>
+        <tbody>
+          ${projects.map((p) => `
+            <tr>
+              <td class="mono">${p.id}</td>
+              <td>${p.loc}</td>
+              <td>${p.ha} ha</td>
+              <td>${p.trees.toLocaleString("id-ID")}</td>
+              <td>${pill(p.status, statusTone[p.status])}</td>
+              <td>${p.survival ? p.survival + "%" : "—"}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  } else if (tab === "sdm") {
+    body = `
+    <div class="sdm-grid">
+      <div class="card sdm-panel">
+        <div class="sdm-panel-title">${icon("building", 16)} Lapisan kantor pusat</div>
+        ${["CEO / Founder", "COO / CFO — Operasi & Keuangan", "CTO — Teknologi & Data", "CMO — Pemasaran & Kemitraan", "Chief Restoration Officer"]
+          .map((r) => `<div class="sdm-role hq">${r}</div>`).join("")}
+      </div>
+      <div class="card sdm-panel">
+        <div class="sdm-panel-title">${icon("users", 16)} Lapisan lapangan per klaster (200 ha)</div>
+        ${["1 Field Operations Manager", "2 Supervisor Penanaman & Perawatan", "1–2 Teknisi IoT & Remote Sensing", "2 Community Facilitator", "20–50 Forest Keeper"]
+          .map((r) => `<div class="sdm-role field">${r}</div>`).join("")}
+      </div>
+    </div>`;
+  } else {
+    body = `
+    <div class="admin-table-wrap payroll">
+      <table>
+        <thead><tr>${["Forest Keeper", "ID", "Tanam", "Siang", "Pupuk", "Survival bonus", "Total"].map((h) => `<th>${h}</th>`).join("")}</tr></thead>
+        <tbody>
+          ${fkPayroll.map((r) => `
+            <tr>
+              <td>${r.name}</td>
+              <td class="mono">${r.id}</td>
+              <td>${r.tanam} pohon</td>
+              <td>${r.siang} pohon</td>
+              <td>${r.pupuk} pohon</td>
+              <td>${r.bonus ? pill("Cair", "amber") : pill("Belum", "soil")}</td>
+              <td style="font-weight:500">${formatRp(payrollTotal(r))}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  return `
+  <div class="admin-wrap">
+    <div class="admin-title">Panel Internal Hutan Kita</div>
+    <div class="admin-sub">Manajemen proyek, sumber daya manusia, dan payroll Forest Keeper</div>
+    <div class="admin-tabs">
+      ${tabs.map(([id, label]) => `<button class="${tab === id ? "active" : ""}" data-action="admin-tab" data-tab="${id}">${label}</button>`).join("")}
+    </div>
+    ${body}
+  </div>`;
+}
+
+/* ---------------- Root render + events ---------------- */
+function render() {
+  renderTopbar();
+  const root = document.getElementById("view-root");
+  if (state.view === "landing") root.innerHTML = renderLanding();
+  else if (state.view === "dashboard") root.innerHTML = renderDashboard();
+  else if (state.view === "mobile") root.innerHTML = renderMobile();
+  else if (state.view === "admin") root.innerHTML = renderAdmin();
+}
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const action = el.dataset.action;
+
+  if (action === "set-view") state.view = el.dataset.view;
+  else if (action === "mobile-start") { state.mobile.screen = "flow"; state.mobile.step = 0; }
+  else if (action === "mobile-back") {
+    if (state.mobile.step === 0) state.mobile.screen = "tasks";
+    else state.mobile.step -= 1;
+  }
+  else if (action === "mobile-scan") state.mobile.scanned = true;
+  else if (action === "mobile-photo") state.mobile.photos[Number(el.dataset.idx)] = true;
+  else if (action === "mobile-next") {
+    if (state.mobile.step === 7) state.mobile.screen = "done";
+    else state.mobile.step += 1;
+  }
+  else if (action === "mobile-reset") {
+    state.mobile = { screen: "tasks", step: 0, scanned: false, photos: [false, false, false] };
+  }
+  else if (action === "admin-tab") state.admin.tab = el.dataset.tab;
+
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
 
